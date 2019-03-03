@@ -140,6 +140,7 @@ class LoginActivity : AppCompatActivity() {
         mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
             if(task.isSuccessful){
                 Log.d(TAG, "Login successful")
+                finish() //this prevents the user going back to log in page once logged in
                 val intent = Intent(this, MainActivity::class.java)
                 intent.putExtra("id", mAuth.currentUser?.email)
                 startActivity(intent)

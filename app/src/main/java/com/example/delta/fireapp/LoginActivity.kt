@@ -142,7 +142,7 @@ class LoginActivity : AppCompatActivity() {
                 Log.d(TAG, "Login successful")
                 finish() //this prevents the user going back to log in page once logged in
                 val intent = Intent(this, MainActivity::class.java)
-                intent.putExtra("id", mAuth.currentUser?.email)
+                intent.putExtra("CURRENT_USER", mAuth.currentUser?.email)
                 startActivity(intent)
 
             }else{
@@ -164,6 +164,7 @@ class LoginActivity : AppCompatActivity() {
 
 
         const val TAG = "LoginActivity"
+
     }
 }
 

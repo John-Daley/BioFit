@@ -7,13 +7,19 @@ import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_sign_up.*
 
 
 class SignUpActivity : AppCompatActivity() {
 
     private lateinit var mAuth: FirebaseAuth
+    private lateinit var dbRef: DatabaseReference
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,6 +27,8 @@ class SignUpActivity : AppCompatActivity() {
         setContentView(R.layout.activity_sign_up)
 
         mAuth = FirebaseAuth.getInstance()
+        dbRef = FirebaseDatabase.getInstance().reference
+
 
         btn_signup.setOnClickListener{ view ->
 
@@ -36,13 +44,14 @@ class SignUpActivity : AppCompatActivity() {
         sign_up_password.error = null
         first_name.error = null
         last_name.error = null
+        date_of_birth.error = null
         //TODO: DOB field
 
-        val emailStr = sign_up_email.text.toString()
-        val passwordStr = sign_up_password.text.toString()
-        val firstNameStr = first_name.text.toString()
-        val lastNameStr = last_name.text.toString()
-
+        val emailStr = sign_up_email.text.toString().trim()
+        val passwordStr = sign_up_password.text.toString().trim()
+        val firstNameStr = first_name.text.toString().trim()
+        val lastNameStr = last_name.text.toString().trim()
+        val dateOfBirthStr = date_of_birth.toString().trim()
 
         var cancel = false
         var focusView: View? = null
@@ -66,7 +75,7 @@ class SignUpActivity : AppCompatActivity() {
         }
 
 
-        //Detect error if name field are empty
+        //Detect error if fields are empty
         if (TextUtils.isEmpty(firstNameStr)) {
             first_name.error = "first name cant be empty"
             focusView = first_name
@@ -77,6 +86,13 @@ class SignUpActivity : AppCompatActivity() {
             focusView = last_name
             cancel = true
         }
+        if (TextUtils.isEmpty(dateOfBirthStr)) {
+            date_of_birth.error = "date of birth cant be empty"
+            focusView = date_of_birth
+            cancel = true
+        }
+        //TODO: More date of birth validation (restrictions)
+
 
         if (cancel) {
             // There was an error; don't attempt sign up and focus the first
@@ -88,6 +104,26 @@ class SignUpActivity : AppCompatActivity() {
 
 
         }
+
+    }
+
+    private fun saveUserInformation(){
+
+        val emailStr = sign_up_email.text.toString().trim()
+        val firstNameStr = first_name.text.toString().trim()
+        val lastNameStr = last_name.text.toString().trim()
+        val dateOfBirthStr = date_of_birth.text.toString().trim()
+
+
+        val userData: UserData = UserData(emailStr, firstNameStr, lastNameStr, dateOfBirthStr)
+
+        val authUser: FirebaseUser? = mAuth.currentUser
+
+        dbRef.child(authUser?.uid).setValue(userData)
+
+        Toast.makeText(this, "Data saved", Toast.LENGTH_SHORT)
+
+
 
     }
 
@@ -112,6 +148,7 @@ class SignUpActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success")
+                            saveUserInformation()
                             finish() //prevents new user from going back to registration activity
                             val intent = Intent(this, MainActivity::class.java)
                             //TODO: send current user info to MainActivity

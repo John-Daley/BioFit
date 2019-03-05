@@ -6,12 +6,20 @@ import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import com.example.delta.fireapp.DataModel.UserData
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import kotlinx.android.synthetic.main.nav_header_main.*
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+
+    private lateinit var mAuth: FirebaseAuth
+    private lateinit var userReference: DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +37,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toggle.syncState()
 
         nav_view.setNavigationItemSelectedListener(this)
+
+        //Get current signed in user
+        mAuth = FirebaseAuth.getInstance()
+        val currentUserUID = mAuth.currentUser?.uid
+
+        //Initialize database based on current user
+        userReference = FirebaseDatabase.getInstance().reference.child("Users").child(currentUserUID)
+
+        //Get user info
+        initUserProfile()
+
+
     }
 
     override fun onBackPressed() {
@@ -80,5 +100,47 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    /*
+    Initialize user profile by loading the user data from database
+     */
+    private fun initUserProfile(){
+
+        //To read values from database
+        //We create an anon inner class for the interface ValueEventListener
+        val userListener = object: ValueEventListener{
+
+            override fun onDataChange(dataSnapshot: DataSnapshot?) {
+
+                //get user info and store it in a UserData object
+                val userData = dataSnapshot!!.getValue(UserData::class.java)
+
+                //format full name string
+                val firstName = userData!!.firstName
+                val lastName = userData.lastName
+                val fullName = "$firstName $lastName"
+
+                //Update UI
+                nav_user_name.text = fullName
+                nav_user_email.text = userData.email
+
+            }
+
+            override fun onCancelled(databaseError: DatabaseError?) {
+
+                Log.w(TAG, "loadUser: Cancelled", databaseError?.toException())
+            }
+
+        }
+
+        //Listen for changes only once (when this method is called)
+        userReference.addListenerForSingleValueEvent(userListener)
+    }
+
+    companion object {
+
+        const val TAG = "MainActivity"
+
     }
 }

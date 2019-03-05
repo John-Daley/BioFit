@@ -8,6 +8,7 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import com.example.delta.fireapp.DataModel.UserData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
@@ -107,39 +108,44 @@ class SignUpActivity : AppCompatActivity() {
 
     }
 
-    private fun saveUserInformation(){
+  /*
+  Helper method to store the user data given in sign-up to our database
+   */
+        private fun saveUserInformation(){
 
-        val emailStr = sign_up_email.text.toString().trim()
-        val firstNameStr = first_name.text.toString().trim()
-        val lastNameStr = last_name.text.toString().trim()
-        val dateOfBirthStr = date_of_birth.text.toString().trim()
+            //obtain user information
+            val emailStr = sign_up_email.text.toString().trim()
+            val firstNameStr = first_name.text.toString().trim()
+            val lastNameStr = last_name.text.toString().trim()
+            val dateOfBirthStr = date_of_birth.text.toString().trim()
 
+            //store in a data object
+            val userData: UserData = UserData(emailStr, firstNameStr, lastNameStr, dateOfBirthStr)
 
-        val userData: UserData = UserData(emailStr, firstNameStr, lastNameStr, dateOfBirthStr)
+            //get the unique Id of current user
+            val authUser: FirebaseUser? = mAuth.currentUser
 
-        val authUser: FirebaseUser? = mAuth.currentUser
+            //perform write operation on database, using the uid as key
+            dbRef.child("Users").child(authUser?.uid).setValue(userData)
 
-        dbRef.child(authUser?.uid).setValue(userData)
+            Toast.makeText(this, "Data saved", Toast.LENGTH_SHORT)
 
-        Toast.makeText(this, "Data saved", Toast.LENGTH_SHORT)
-
-
-
-    }
+        }
 
     private fun isEmailValid(email: String): Boolean {
-
         //TODO: More e-mail validation here
         return email.contains("@")
     }
 
     private fun isPasswordValid(password: String): Boolean {
-
         //TODO: A lot more password validation here
         return password.length > 4
     }
 
-        fun createAccount(view:View, email: String, password: String) {
+    /*
+        Creates a user in firebase with a unique Id (uid)
+    */
+    fun createAccount(view:View, email: String, password: String) {
 
             showMessage(view, "Creating Account...")
 
@@ -155,12 +161,10 @@ class SignUpActivity : AppCompatActivity() {
                             //intent.putExtra("id", mAuth.currentUser?.email)
                             startActivity(intent)
 
-
                 } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.exception)
                             showMessage(view, "Error: account couldn't be created")
-
 
                 }
 

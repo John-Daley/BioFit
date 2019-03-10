@@ -45,7 +45,7 @@ class HeartRateActivity : AppCompatActivity(), SensorEventListener {
     override fun onSensorChanged(p0: SensorEvent?) {
         var heartRateValue = p0!!.values[0]
         var heartRate = Math.round(heartRateValue)
-        val beatsPerMinuteDisplay = findViewById(R.id.beatsPerMinuteDisplay) as TextView
+        val beatsPerMinuteDisplay = findViewById<TextView>(R.id.beatsPerMinuteDisplay)
 
         beatsPerMinuteDisplay.setText(Integer.toString(heartRate))
     }

@@ -20,11 +20,14 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
-
+<!--Strings added by John for user profile and running activities -->
     <string name="user_name">John Daley</string>
     <string name="profile_Pic">Users profile pic</string>
     <string name="button_label_sleep">Sleep Tracker</string>
     <string name="button_label_heart_rate">Heart Rate</string>
     <string name="button_label_run_tracker">Go Running</string>
     <string name="button_label_activity_level">Activity Level</string>
+    <string name="text_view_label_running_hours">Hours</string>
+    <string name="text_view_label_running_min">Minutes</string>
+
 </resources>

@@ -15,6 +15,9 @@ public fun goToHeartRateView(view : View){
     val intent = Intent(this,HeartRateActivity::class.java)
     startActivity(intent)
 }
-
+fun goToRunSettingsView(view: View){
+    val intent = Intent(this,RunSettingsActivity::class.java)
+    startActivity(intent)
+}
 
 }

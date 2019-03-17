@@ -9,14 +9,37 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
+import com.example.delta.fireapp.DataModel.HeartRateData
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ServerValue
+import kotlinx.android.synthetic.main.activity_heart_rate.*
+import java.text.SimpleDateFormat
 
 class HeartRateActivity : AppCompatActivity(), SensorEventListener {
     val sensorManager: SensorManager? = null
     val heartRateSensor: Sensor? = null
 
+    // --DB Ops
+    private lateinit var mAuth: FirebaseAuth
+    private lateinit var dbRef: DatabaseReference
+    private lateinit var currentUserUID: String
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_heart_rate)
+
+        //Get current signed in user
+        mAuth = FirebaseAuth.getInstance()
+        currentUserUID = mAuth.currentUser?.uid!!
+
+
+        //general db initialization
+        dbRef = FirebaseDatabase.getInstance().reference
+
     }
 
     fun onClickBPMstartButton(view: View){
@@ -56,4 +79,29 @@ class HeartRateActivity : AppCompatActivity(), SensorEventListener {
         sensorManager?.unregisterListener(this)
 
     }
+
+
+    /*
+    Save the calculated BPM on database, based on server's time rather than "subjective" device time
+    The ServerValue.TIMESTAMP saves a MutableMap (key,value) when saving
+    Note: This value is calculated after WRITE operation and is actually retrieved as data type Long
+     */
+    private fun saveHeartRateData(view:View, bpm: Int) {
+
+        val timestamp = ServerValue.TIMESTAMP
+
+        //store in a data object
+        val heartRateData: HeartRateData = HeartRateData(bpm, timestamp , currentUserUID)
+
+        //perform write operation on database
+        var HeartRateDbRef: DatabaseReference = FirebaseDatabase.getInstance().getReference("HeartRateData")
+        //generate unique id
+        val key = HeartRateDbRef.push().getKey()
+        dbRef.child("HeartRateData").child(key).setValue(heartRateData)
+
+
+        Toast.makeText(this, "Heart Rate saved", Toast.LENGTH_SHORT).show()
+
+    }
+
 }

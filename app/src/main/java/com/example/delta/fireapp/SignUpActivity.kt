@@ -128,7 +128,7 @@ class SignUpActivity : AppCompatActivity() {
             //perform write operation on database, using the uid as key
             dbRef.child("Users").child(authUser?.uid).setValue(userData)
 
-            Toast.makeText(this, "Data saved", Toast.LENGTH_SHORT)
+            Toast.makeText(this, "Data saved", Toast.LENGTH_SHORT).show()
 
         }
 

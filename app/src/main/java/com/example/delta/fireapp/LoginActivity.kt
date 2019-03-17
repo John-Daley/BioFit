@@ -141,7 +141,7 @@ class LoginActivity : AppCompatActivity() {
             if(task.isSuccessful){
                 Log.d(TAG, "Login successful")
                 finish() //this prevents the user going back to log in page once logged in
-                val intent = Intent(this, activity_user_profile::class.java)
+                val intent = Intent(this, MainActivity::class.java)
                 intent.putExtra("CURRENT_USER", mAuth.currentUser?.email)
                 startActivity(intent)
 

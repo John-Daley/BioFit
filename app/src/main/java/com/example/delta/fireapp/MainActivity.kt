@@ -1,5 +1,6 @@
 package com.example.delta.fireapp
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.design.widget.NavigationView
@@ -9,7 +10,9 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import com.example.delta.fireapp.DataModel.UserData
+import com.example.delta.fireapp.SleepTrack.SleepTrackActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_main.*
@@ -26,10 +29,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
-        }
 
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
@@ -137,6 +136,23 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //Listen for changes only once (when this method is called)
         userReference.addListenerForSingleValueEvent(userListener)
     }
+
+    fun goToHeartRateView(view : View){
+        val intent = Intent(this,HeartRateActivity::class.java)
+        startActivity(intent)
+    }
+
+    fun goToRunSettingsView(view: View){
+        val intent = Intent(this,RunSettingsActivity::class.java)
+        startActivity(intent)
+    }
+
+    fun goToSleepTrack(view: View){
+        val intent = Intent(this, SleepTrackActivity::class.java)
+        startActivity(intent)
+    }
+
+
 
     companion object {
 

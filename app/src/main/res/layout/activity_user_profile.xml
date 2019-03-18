@@ -131,6 +131,7 @@
                 <!-- First Row -->
 
                 <TextView
+                    android:id="@+id/lbl_gender"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
@@ -151,6 +152,7 @@
                 <!-- Second Row -->
 
                 <TextView
+                    android:id="@+id/lbl_height"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
@@ -171,6 +173,7 @@
                     />
 
                 <TextView
+                    android:id="@+id/lbl_unit_height"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="16dp"
@@ -182,6 +185,7 @@
                 <!-- Third Row -->
 
                 <TextView
+                    android:id="@+id/lbl_weight"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
@@ -201,6 +205,7 @@
                     />
 
                 <TextView
+                    android:id="@+id/lbl_unit_weight"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="16dp"

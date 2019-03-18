@@ -78,17 +78,17 @@ class SignUpActivity : AppCompatActivity() {
 
         //Detect error if fields are empty
         if (TextUtils.isEmpty(firstNameStr)) {
-            first_name.error = "first name cant be empty"
+            first_name.error = getString(R.string.invalid_empty_string)
             focusView = first_name
             cancel = true
         }
         if (TextUtils.isEmpty(lastNameStr)) {
-            last_name.error = "last name cant be empty"
+            last_name.error = getString(R.string.invalid_empty_string)
             focusView = last_name
             cancel = true
         }
         if (TextUtils.isEmpty(dateOfBirthStr)) {
-            date_of_birth.error = "date of birth cant be empty"
+            date_of_birth.error = getString(R.string.invalid_empty_string)
             focusView = date_of_birth
             cancel = true
         }
@@ -120,7 +120,7 @@ class SignUpActivity : AppCompatActivity() {
             val dateOfBirthStr = date_of_birth.text.toString().trim()
 
             //store in a data object
-            val userData: UserData = UserData(emailStr, firstNameStr, lastNameStr, dateOfBirthStr)
+            val userData = UserData(emailStr, firstNameStr, lastNameStr, dateOfBirthStr)
 
             //get the unique Id of current user
             val authUser: FirebaseUser? = mAuth.currentUser

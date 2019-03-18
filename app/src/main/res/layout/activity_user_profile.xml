@@ -17,6 +17,7 @@
     >
 
 
+
     <ScrollView
         android:id="@+id/scrollView2"
         android:layout_width="match_parent"
@@ -144,12 +145,15 @@
                     android:layout_columnSpan="2"
                     android:layout_marginLeft="15dp"
                     android:layout_marginTop="16dp"
-                    android:textSize="16sp"
+                    android:textSize="12sp"
+                    android:entries="@array/genders"
 
                     />
 
 
                 <!-- Second Row -->
+
+                <!--TODO: DOB FIELD!-->
 
                 <TextView
                     android:id="@+id/lbl_height"

@@ -8,7 +8,7 @@ data class UserData(
         val lastName: String? = "",
         val dateOfBirth: String? = "",
         val gender:String? = "",
-        val height:Int? = 0,
+        val height:Int = 0,
         val weight:Float? = 0f
 
 

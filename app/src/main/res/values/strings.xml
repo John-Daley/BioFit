@@ -29,5 +29,8 @@
     <string name="button_label_activity_level">Activity Level</string>
     <string name="text_view_label_running_hours">Hours</string>
     <string name="text_view_label_running_min">Minutes</string>
+    <string name="profile_edit_button">Edit</string>
+    <string name="profile_save_button">Save</string>
+    <string name="invalid_empty_string">This field can\'t be empty</string>
 
 </resources>

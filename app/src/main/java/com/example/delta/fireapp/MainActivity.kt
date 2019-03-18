@@ -76,21 +76,34 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
+
+
+
         when (item.itemId) {
             R.id.nav_profile -> {
-                // Handle the camera action
+
+                val nextIntent = Intent(this, UserProfileActivity::class.java)
+                startActivity(nextIntent)
+
             }
             R.id.nav_awards -> {
+
+                //TODO future feature
 
             }
 
             R.id.nav_share -> {
 
+                //TODO Post to social media
+
             }
 
         }
 
+
+
         drawer_layout.closeDrawer(GravityCompat.START)
+
         return true
     }
 

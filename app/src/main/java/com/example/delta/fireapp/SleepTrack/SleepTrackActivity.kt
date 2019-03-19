@@ -4,13 +4,10 @@ import android.app.Dialog
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import com.example.delta.fireapp.DataModel.SleepData
-import com.example.delta.fireapp.DataModel.UserData
-import com.example.delta.fireapp.MainActivity
 import com.example.delta.fireapp.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -99,7 +96,7 @@ class SleepTrackActivity : AppCompatActivity() {
 
     }
 
-    private fun readSleepData(){
+    private fun updateSleepData(newRating:String){
 
         val now = System.currentTimeMillis()
 
@@ -108,7 +105,7 @@ class SleepTrackActivity : AppCompatActivity() {
         query.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 for (sleepData in dataSnapshot.children) {
-                    // TODO: handle the post
+
 
 
                     var data = sleepData.getValue(SleepData::class.java)
@@ -122,7 +119,7 @@ class SleepTrackActivity : AppCompatActivity() {
                             var sleepReference = FirebaseDatabase.getInstance().reference.child("SleepData").child(sleepData.key)
 
                             data.end = now
-                            data.rating = "Good"
+                            data.rating = newRating
 
                             println(data.toString())
 
@@ -185,7 +182,7 @@ class SleepTrackActivity : AppCompatActivity() {
 
             }else{
                 //woke up
-                readSleepData()
+                updateSleepData("Excellent")
                 updateArray()
 
 

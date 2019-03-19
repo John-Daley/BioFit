@@ -50,13 +50,7 @@ class UserProfileActivity : AppCompatActivity() {
 
             }
 
-            btn_edit_save_profile.isEnabled = false
 
-            if(passValidation()){
-
-                btn_edit_save_profile.isEnabled = true
-
-            }
 
 
         }else{
@@ -130,9 +124,14 @@ class UserProfileActivity : AppCompatActivity() {
 
     private fun onClickSave(view: View){
 
-        isEditable = false
 
-        writeUserData()
+        if(passValidation()){
+
+            isEditable = false
+            writeUserData()
+
+
+        }
 
         updateUI()
 
@@ -146,6 +145,8 @@ class UserProfileActivity : AppCompatActivity() {
         val gender = spinner_gender.selectedItem
         val height = Integer.parseInt(profile_height.text.toString())
         val weight = profile_weight.text.toString().toFloat()
+
+        println("WRiting to database")
 
 
 
@@ -161,12 +162,11 @@ class UserProfileActivity : AppCompatActivity() {
         var isValid = true
         var focusView: View? =null
 
-        val email = profile_email.text.toString().trim()
+
         val firstName = profile_first_name.text.toString().trim()
         val lastName = profile_last_name.text.toString().trim()
-        val gender = spinner_gender.selectedItem
-        val height = Integer.parseInt(profile_height.text.toString())
-        val weight = profile_weight.text.toString().toFloat()
+        val heightStr = profile_height.text.toString()
+        val weightStr = profile_weight.text.toString()
 
         if (TextUtils.isEmpty(firstName)){
             profile_first_name.error = getString(R.string.invalid_empty_string)
@@ -182,11 +182,19 @@ class UserProfileActivity : AppCompatActivity() {
 
         }
 
-        //TODO: height validation
+        if(TextUtils.isEmpty(heightStr)){
+            profile_height.error = getString(R.string.invalid_empty_string)
+            focusView = profile_height
+            isValid = false
+        }
 
-        //TODO: weight validation
+        if(TextUtils.isEmpty(weightStr)){
+            profile_height.error =getString(R.string.invalid_empty_string)
+            focusView = profile_weight
+            isValid = false
+        }
 
-        //TODO: add DOB
+
 
             if(!isValid){
                 focusView?.requestFocus()
@@ -196,6 +204,8 @@ class UserProfileActivity : AppCompatActivity() {
 
 
     }
+
+
 
     private fun editDisable(){
         profile_email.isEnabled =false

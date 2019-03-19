@@ -2,12 +2,15 @@ package com.example.delta.fireapp.SleepTrack
 
 import android.app.Dialog
 import android.content.Intent
-import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import com.example.delta.fireapp.DataModel.SleepData
+import com.example.delta.fireapp.DataModel.UserData
+import com.example.delta.fireapp.MainActivity
 import com.example.delta.fireapp.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -50,10 +53,10 @@ class SleepTrackActivity : AppCompatActivity() {
         test()
     }
 
-    fun startButton(view: View) {
-        startTime = Calendar.getInstance().time
+    fun startButton(view: View){
+    startTime = Calendar.getInstance().time
 
-    }
+}
 
     fun stopButton(view: View) {
         stopTime = Calendar.getInstance().time
@@ -86,7 +89,7 @@ class SleepTrackActivity : AppCompatActivity() {
     }
 
 
-    private fun saveSleepData(sleepData: SleepData) {
+    private fun saveSleepData(sleepData: SleepData){
 
         var sleepDbRef: DatabaseReference = FirebaseDatabase.getInstance().getReference("SleepData")
         val key = sleepDbRef.push().key
@@ -96,7 +99,7 @@ class SleepTrackActivity : AppCompatActivity() {
 
     }
 
-    private fun updateSleepData(newRating: String) {
+    private fun readSleepData(){
 
         val now = System.currentTimeMillis()
 
@@ -105,22 +108,28 @@ class SleepTrackActivity : AppCompatActivity() {
         query.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 for (sleepData in dataSnapshot.children) {
+                    // TODO: handle the post
+
 
                     var data = sleepData.getValue(SleepData::class.java)
 
                     if (data!!.userId.equals(currentUserUID)) {
 
+                        println(data.toString())
+
                         if (!data.end.equals(0)) {
 
-                            val sleepReference = FirebaseDatabase.getInstance().reference.child("SleepData").child(sleepData.key)
+                            var sleepReference = FirebaseDatabase.getInstance().reference.child("SleepData").child(sleepData.key)
 
                             data.end = now
-                            data.rating = newRating
+                            data.rating = "Good"
 
+                            println(data.toString())
 
                             sleepReference.setValue(data)
 
                         }
+
 
                     }
                 }
@@ -132,11 +141,10 @@ class SleepTrackActivity : AppCompatActivity() {
                 // ...
             }
         })
+
     }
 
-    private fun updateUserSleepDataArray(id: String) {
-
-        userSleepDataArray.clear()
+    private fun updateArray(){
 
         val query = dbRef.child("SleepData")
 
@@ -148,11 +156,8 @@ class SleepTrackActivity : AppCompatActivity() {
 
                     if (data!!.userId.equals(currentUserUID)) {
 
-                        if (!data.end.equals(0)) {
-
-                            userSleepDataArray.add(data)
-
-                        }
+                        userSleepDataArray.add(data)
+                        textView_test.text = userSleepDataArray.size.toString()
 
                     }
                 }
@@ -167,34 +172,37 @@ class SleepTrackActivity : AppCompatActivity() {
 
     }
 
+    private fun test(){
+        toggleButton_test.setOnCheckedChangeListener{_, isChecked ->
+            if(isChecked){
+                //started sleeping
+
+                val data = SleepData(System.currentTimeMillis(),0,"", currentUserUID)
+
+                saveSleepData(data)
+
+                userSleepDataArray.clear()
+
+            }else{
+                //woke up
+                readSleepData()
+                updateArray()
+
+
+
+            }
+        }
+    }
+
+    private fun updateSleepUI(sleepData:SleepData){
+
+    }
+
+
     fun convertLongToTime(time: Long): String {
         val date = Date(time)
         val format = SimpleDateFormat("yyyy-MM-dd HH:mm")
         return format.format(date)
     }
 
-    private fun test() {
-        toggleButton_test.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                //started sleeping
-
-                val data = SleepData(System.currentTimeMillis(), 0, "", currentUserUID)
-
-                saveSleepData(data)
-
-                userSleepDataArray.clear()
-
-            } else {
-                //woke up
-
-                updateSleepData("Excellent")
-
-                updateUserSleepDataArray(currentUserUID)
-
-                textView_test.text = userSleepDataArray.size.toString()
-
-
-            }
-        }
-    }
 }

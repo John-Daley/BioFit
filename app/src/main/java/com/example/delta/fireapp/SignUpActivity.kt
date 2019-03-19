@@ -14,6 +14,9 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_sign_up.*
+import kotlinx.android.synthetic.main.activity_user_profile.*
+import java.text.ParseException
+import java.text.SimpleDateFormat
 
 
 class SignUpActivity : AppCompatActivity() {
@@ -75,24 +78,33 @@ class SignUpActivity : AppCompatActivity() {
             cancel = true
         }
 
+        if(!isDateValid(dateOfBirthStr)){
+
+            profile_DOB.error =getString(R.string.date_format_dd_mm_yyyy)
+            focusView = profile_DOB
+            cancel = true
+
+        }
+
 
         //Detect error if fields are empty
         if (TextUtils.isEmpty(firstNameStr)) {
-            first_name.error = "first name cant be empty"
+            first_name.error = getString(R.string.invalid_empty_string)
             focusView = first_name
             cancel = true
         }
         if (TextUtils.isEmpty(lastNameStr)) {
-            last_name.error = "last name cant be empty"
+            last_name.error = getString(R.string.invalid_empty_string)
             focusView = last_name
             cancel = true
         }
         if (TextUtils.isEmpty(dateOfBirthStr)) {
-            date_of_birth.error = "date of birth cant be empty"
+            date_of_birth.error = getString(R.string.invalid_empty_string)
             focusView = date_of_birth
             cancel = true
         }
-        //TODO: More date of birth validation (restrictions)
+
+
 
 
         if (cancel) {
@@ -120,7 +132,7 @@ class SignUpActivity : AppCompatActivity() {
             val dateOfBirthStr = date_of_birth.text.toString().trim()
 
             //store in a data object
-            val userData: UserData = UserData(emailStr, firstNameStr, lastNameStr, dateOfBirthStr)
+            val userData = UserData(emailStr, firstNameStr, lastNameStr, dateOfBirthStr)
 
             //get the unique Id of current user
             val authUser: FirebaseUser? = mAuth.currentUser
@@ -140,6 +152,19 @@ class SignUpActivity : AppCompatActivity() {
     private fun isPasswordValid(password: String): Boolean {
         //TODO: A lot more password validation here
         return password.length > 4
+    }
+
+    private fun isDateValid(dateStr :String):Boolean{
+
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy")
+        dateFormat.isLenient = false
+        try{
+            dateFormat.parse(dateStr)
+
+        }catch(e: ParseException){
+            return false
+        }
+        return true
     }
 
     /*

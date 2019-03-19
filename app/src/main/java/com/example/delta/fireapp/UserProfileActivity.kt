@@ -10,6 +10,8 @@ import com.example.delta.fireapp.DataModel.UserData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_user_profile.*
+import java.text.ParseException
+import java.text.SimpleDateFormat
 
 class UserProfileActivity : AppCompatActivity() {
 
@@ -111,6 +113,7 @@ class UserProfileActivity : AppCompatActivity() {
         spinner_gender.prompt = userData.gender
         profile_height.setText(userData.height.toString())
         profile_weight.setText(userData.weight.toString())
+        profile_DOB.setText(userData.dateOfBirth)
 
     }
 
@@ -128,6 +131,7 @@ class UserProfileActivity : AppCompatActivity() {
         if(passValidation()){
 
             isEditable = false
+
             writeUserData()
 
 
@@ -139,14 +143,17 @@ class UserProfileActivity : AppCompatActivity() {
 
     private fun writeUserData(){
 
-        val email = profile_email.text.toString().trim()
+        val email = profile_email.text.toString()
         val firstName = profile_first_name.text.toString().trim()
         val lastName = profile_last_name.text.toString().trim()
-        val gender = spinner_gender.selectedItem
+        val gender = spinner_gender.selectedItem.toString()
         val height = Integer.parseInt(profile_height.text.toString())
         val weight = profile_weight.text.toString().toFloat()
+        val dob = profile_DOB.text.toString()
 
-        println("WRiting to database")
+        val newUserData = UserData(email,firstName,lastName,dob,gender,height,weight)
+
+        userReference.setValue(newUserData)
 
 
 
@@ -158,6 +165,7 @@ class UserProfileActivity : AppCompatActivity() {
         profile_last_name.error = null
         profile_height.error= null
         profile_weight.error = null
+        profile_DOB.error = null
 
         var isValid = true
         var focusView: View? =null
@@ -167,6 +175,7 @@ class UserProfileActivity : AppCompatActivity() {
         val lastName = profile_last_name.text.toString().trim()
         val heightStr = profile_height.text.toString()
         val weightStr = profile_weight.text.toString()
+        val dateOfBirthStr = profile_DOB.text.toString()
 
         if (TextUtils.isEmpty(firstName)){
             profile_first_name.error = getString(R.string.invalid_empty_string)
@@ -189,11 +198,25 @@ class UserProfileActivity : AppCompatActivity() {
         }
 
         if(TextUtils.isEmpty(weightStr)){
-            profile_height.error =getString(R.string.invalid_empty_string)
+            profile_weight.error =getString(R.string.invalid_empty_string)
             focusView = profile_weight
             isValid = false
         }
 
+
+        if(TextUtils.isEmpty(dateOfBirthStr)){
+            profile_DOB.error =getString(R.string.invalid_empty_string)
+            focusView = profile_DOB
+            isValid = false
+        }
+
+        if(!isValidDate(dateOfBirthStr)){
+
+            profile_DOB.error ="Please enter a valid date: dd/mm/yyyy"
+            focusView = profile_DOB
+            isValid = false
+
+        }
 
 
             if(!isValid){
@@ -205,6 +228,19 @@ class UserProfileActivity : AppCompatActivity() {
 
     }
 
+    private fun isValidDate(dateStr :String):Boolean{
+
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy")
+        dateFormat.isLenient = false
+        try{
+            dateFormat.parse(dateStr)
+
+        }catch(e: ParseException){
+            return false
+        }
+        return true
+    }
+
 
 
     private fun editDisable(){
@@ -214,6 +250,7 @@ class UserProfileActivity : AppCompatActivity() {
         spinner_gender.isEnabled =false
         profile_height.isEnabled =false
         profile_weight.isEnabled =false
+        profile_DOB.isEnabled = false
 
     }
 
@@ -224,6 +261,7 @@ class UserProfileActivity : AppCompatActivity() {
         spinner_gender.isEnabled =true
         profile_height.isEnabled =true
         profile_weight.isEnabled =true
+        profile_DOB.isEnabled = true
     }
 
 

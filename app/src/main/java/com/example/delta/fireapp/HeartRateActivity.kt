@@ -81,22 +81,20 @@ class HeartRateActivity : AppCompatActivity(), SensorEventListener {
     }
 
 
-    /*
-    Save the calculated BPM on database, based on server's time rather than "subjective" device time
-    The ServerValue.TIMESTAMP saves a MutableMap (key,value) when saving
-    Note: This value is calculated after WRITE operation and is actually retrieved as data type Long
-     */
+
     private fun saveHeartRateData(view:View, bpm: Int) {
 
-        val timestamp = ServerValue.TIMESTAMP
+
+        val timestamp =  System.currentTimeMillis()
+
 
         //store in a data object
-        val heartRateData: HeartRateData = HeartRateData(bpm, timestamp , currentUserUID)
+        val heartRateData = HeartRateData(bpm, timestamp , currentUserUID)
 
         //perform write operation on database
-        var HeartRateDbRef: DatabaseReference = FirebaseDatabase.getInstance().getReference("HeartRateData")
+        var heartRateDbRef: DatabaseReference = FirebaseDatabase.getInstance().getReference("HeartRateData")
         //generate unique id
-        val key = HeartRateDbRef.push().getKey()
+        val key = heartRateDbRef.push().key
         dbRef.child("HeartRateData").child(key).setValue(heartRateData)
 
 

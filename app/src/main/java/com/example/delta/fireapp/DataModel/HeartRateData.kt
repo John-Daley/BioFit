@@ -6,7 +6,7 @@ package com.example.delta.fireapp.DataModel
 data class HeartRateData (
 
         val BPM: Int = 0,
-        val dateTime: MutableMap<String, String> ,
+        val dateTime: Long = 0 ,
         val userID: String? = ""
 
 )

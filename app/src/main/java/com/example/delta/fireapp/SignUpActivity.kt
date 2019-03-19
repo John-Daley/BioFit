@@ -14,6 +14,9 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_sign_up.*
+import kotlinx.android.synthetic.main.activity_user_profile.*
+import java.text.ParseException
+import java.text.SimpleDateFormat
 
 
 class SignUpActivity : AppCompatActivity() {
@@ -75,6 +78,14 @@ class SignUpActivity : AppCompatActivity() {
             cancel = true
         }
 
+        if(!isDateValid(dateOfBirthStr)){
+
+            profile_DOB.error =getString(R.string.date_format_dd_mm_yyyy)
+            focusView = profile_DOB
+            cancel = true
+
+        }
+
 
         //Detect error if fields are empty
         if (TextUtils.isEmpty(firstNameStr)) {
@@ -92,7 +103,8 @@ class SignUpActivity : AppCompatActivity() {
             focusView = date_of_birth
             cancel = true
         }
-        //TODO: More date of birth validation (restrictions)
+
+
 
 
         if (cancel) {
@@ -140,6 +152,19 @@ class SignUpActivity : AppCompatActivity() {
     private fun isPasswordValid(password: String): Boolean {
         //TODO: A lot more password validation here
         return password.length > 4
+    }
+
+    private fun isDateValid(dateStr :String):Boolean{
+
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy")
+        dateFormat.isLenient = false
+        try{
+            dateFormat.parse(dateStr)
+
+        }catch(e: ParseException){
+            return false
+        }
+        return true
     }
 
     /*

@@ -212,7 +212,7 @@ class UserProfileActivity : AppCompatActivity() {
 
         if(!isValidDate(dateOfBirthStr)){
 
-            profile_DOB.error ="Please enter a valid date: dd/mm/yyyy"
+            profile_DOB.error =getString(R.string.date_format_dd_mm_yyyy)
             focusView = profile_DOB
             isValid = false
 

@@ -32,5 +32,6 @@
     <string name="profile_edit_button">Edit</string>
     <string name="profile_save_button">Save</string>
     <string name="invalid_empty_string">This field can\'t be empty</string>
+    <string name="date_format_dd_mm_yyyy">Please enter a valid date: dd/mm/yyyy</string>
 
 </resources>

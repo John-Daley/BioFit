@@ -89,12 +89,12 @@ class HeartRateActivity : AppCompatActivity(), SensorEventListener {
 
 
         //store in a data object
-        val heartRateData: HeartRateData = HeartRateData(bpm, timestamp , currentUserUID)
+        val heartRateData = HeartRateData(bpm, timestamp , currentUserUID)
 
         //perform write operation on database
-        var HeartRateDbRef: DatabaseReference = FirebaseDatabase.getInstance().getReference("HeartRateData")
+        var heartRateDbRef: DatabaseReference = FirebaseDatabase.getInstance().getReference("HeartRateData")
         //generate unique id
-        val key = HeartRateDbRef.push().getKey()
+        val key = heartRateDbRef.push().key
         dbRef.child("HeartRateData").child(key).setValue(heartRateData)
 
 

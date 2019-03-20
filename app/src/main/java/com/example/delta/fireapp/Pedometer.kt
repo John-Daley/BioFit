@@ -3,12 +3,14 @@ package com.example.delta.fireapp
 import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import kotlinx.android.synthetic.main.activity_pedometer.*
 
-class Pedometer : AppCompatActivity() {
+class Pedometer : AppCompatActivity(), SensorEventListener {
     var running = false
     var sensorManager: SensorManager? = null
 
@@ -17,15 +19,16 @@ class Pedometer : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pedometer)
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+    }
 
         override fun onResume() {
             super.onResume()
             running = true
             var stepsSensor = sensorManager?.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
 
-            if(stepsSensor == null){
+            if (stepsSensor == null) {
                 Toast.makeText(this, "No step Counter !", Toast.LENGTH_SHORT).show()
-            }else {
+            } else {
                 sensorManager?.registerListener(this, stepsSensor, SensorManager.SENSOR_DELAY_UI)
             }
         }
@@ -34,15 +37,15 @@ class Pedometer : AppCompatActivity() {
             super.onPause()
             running = false
             sensorManager?.unregisterListener(this)
-        }
+    }
 
         override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
 
         }
 
-        override fun onSensorChanged(event: SensorEvent) {
+        override fun onSensorChanged(event: SensorEvent?) {
             if(running){
-                textView2.setText(" "  + event.values[0])
+                textView.setText(" "  + event!!.values[0])
 
             }
     }

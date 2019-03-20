@@ -18,6 +18,7 @@
         <activity android:name=".SleepTrack.SleepTrackActivity"></activity>
         <activity android:name=".SleepTrack.SleepDetailActivity" />
         <activity android:name=".SleepTrack.SleepSettingsActivity" />
+        <activity android:name=".RetrievePasswordActivity" />
 
         <activity android:name=".RunSettingsActivity"></activity>
 

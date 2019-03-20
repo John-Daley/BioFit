@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.delta.fireapp">
+
     <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
@@ -14,14 +15,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-        <activity android:name=".SleepTrack.SleepTrackActivity"></activity>
+        <activity android:name=".SleepTrack.SleepTrackActivity" />
         <activity android:name=".SleepTrack.SleepDetailActivity" />
         <activity android:name=".SleepTrack.SleepSettingsActivity" />
         <activity android:name=".RetrievePasswordActivity" />
-
-        <activity android:name=".RunSettingsActivity"></activity>
-
+        <activity android:name=".RunSettingsActivity" />
         <activity android:name=".UserProfileActivity" />
         <activity android:name=".HeartRateActivity" />
         <activity
@@ -38,6 +36,10 @@
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".SignUpActivity" />
+        <activity
+            android:name=".AccountSettingsActivity"
+            android:label="@string/title_activity_account_settings"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

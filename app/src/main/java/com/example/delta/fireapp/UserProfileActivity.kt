@@ -52,9 +52,6 @@ class UserProfileActivity : AppCompatActivity() {
 
             }
 
-
-
-
         }else{
 
             readUserData()

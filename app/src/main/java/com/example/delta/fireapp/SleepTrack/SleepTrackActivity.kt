@@ -25,6 +25,7 @@ class SleepTrackActivity : AppCompatActivity() {
     lateinit var stopTime: Date
     lateinit var myDialog: Dialog
     lateinit var rating: String
+    var isStarted: Boolean = false
 
     // --DB Ops
     private lateinit var mAuth: FirebaseAuth
@@ -51,10 +52,10 @@ class SleepTrackActivity : AppCompatActivity() {
         sleepDataDbRef = FirebaseDatabase.getInstance().getReference("SleepData")
 
         updateArray()
-        test()
+        //test()
     }
 
-    fun startButton(view: View){
+    fun recordingsButton(view: View){
         val intent = Intent(this, SleepDetailActivity::class.java)
         var bundle = Bundle()
         bundle.putSerializable("sleepData", userSleepDataArray)
@@ -62,48 +63,6 @@ class SleepTrackActivity : AppCompatActivity() {
         startActivity(intent)
 
 }
-
-    fun testText(){
-        var start: Long = userSleepDataArray[0].start
-        var end: Long = userSleepDataArray[0].end
-        var timeSlept = end-start
-        var outPut = String.format("%02d:%02d:%02d",
-                TimeUnit.MILLISECONDS.toHours(timeSlept),
-                TimeUnit.MILLISECONDS.toMinutes(timeSlept) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(timeSlept)),
-                TimeUnit.MILLISECONDS.toSeconds(timeSlept) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(timeSlept)))
-    }
-
-    fun stopButton(view: View) {
-        stopTime = Calendar.getInstance().time
-        var timeSlept = stopTime.time - startTime.time
-        var outPut = String.format("%02d:%02d:%02d",
-                TimeUnit.MILLISECONDS.toHours(timeSlept),
-                TimeUnit.MILLISECONDS.toMinutes(timeSlept) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(timeSlept)),
-                TimeUnit.MILLISECONDS.toSeconds(timeSlept) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(timeSlept)))
-        myDialog.setContentView(R.layout.popup_smiley_rating)
-        var tvTimeSlept = myDialog.findViewById<TextView>(R.id.textView4)
-        var smileRating = myDialog.findViewById<SmileRating>(R.id.smile_rating)
-
-
-
-        smileRating.setOnRatingSelectedListener { level, reselected ->
-            when (level) {
-                1 -> rating = "TERRIBLE"
-                2 -> rating = "BAD"
-                3 -> rating = "OKAY"
-                4 -> rating = "GOOD"
-                5 -> rating = "GREAT"
-            }
-            myDialog.dismiss()
-            val intent = Intent(this, SleepDetailActivity::class.java)
-            intent.putExtra("stuff", outPut)
-            intent.putExtra("rating", rating)
-            startActivity(intent)
-        }
-        tvTimeSlept.text = outPut
-        myDialog.show()
-
-    }
 
 
     private fun saveSleepData(){
@@ -125,8 +84,6 @@ class SleepTrackActivity : AppCompatActivity() {
         dbRef.child("SleepData").child(currentKey).child("rating").setValue(newRating)
 
         Toast.makeText(this, "Sleep Sesh Stopped", Toast.LENGTH_SHORT).show()
-
-
     }
 
 
@@ -169,49 +126,73 @@ class SleepTrackActivity : AppCompatActivity() {
 
     }
 
-    private fun test(){
-        toggleButton_test.setOnCheckedChangeListener{_, isChecked ->
-            if(isChecked){
-                //started sleeping
+    private fun updateUI(){
 
-                saveSleepData()
-                aux++
-                //Toast.makeText(this, "WORKING BOI", Toast.LENGTH_SHORT).show()
+        if(isStarted) {
+            textView_toggle.text = "Stop"
+
+        toggleCard.setOnClickListener{view ->
+            onClickStop(view)
+        }
+
+        }else{
+            textView_toggle.text = "Start"
+
+            toggleCard.setOnClickListener{view ->
+                onClickStart(view)
+            }
+        }
+
+
+    }
+
+    fun onClickStart(view: View){
+        isStarted = true
+        saveSleepData()
+        updateUI()
+
+
+    }
+
+    fun onClickStop(view: View){
+        isStarted = false
+        myDialog.setContentView(R.layout.popup_smiley_rating)
+        var smileRating = myDialog.findViewById<SmileRating>(R.id.smile_rating)
+        smileRating.setOnRatingSelectedListener { level, reselected ->
+            when (level) {
+                1 -> updateSleepData("TERRIBLE")
+                2 -> updateSleepData("BAD")
+                3 -> updateSleepData("OKAY")
+                4 -> updateSleepData("GOOD")
+                5 -> updateSleepData("GREAT")
+            }
+            myDialog.dismiss()
+        }
+        updateArray()
+        updateUI()
+        myDialog.show()
+    }
+
+   /*fun test(view: View){
+
+        if(isStarted){
+            saveSleepData()
+
+            isStarted = true
+
+            textView_toggle.text = "stop"
 
             }else{
                 //woke up
 
-                myDialog.setContentView(R.layout.popup_smiley_rating)
-                var smileRating = myDialog.findViewById<SmileRating>(R.id.smile_rating)
-                smileRating.setOnRatingSelectedListener { level, reselected ->
-                    when (level) {
-                        1 -> updateSleepData("TERRIBLE")
-                        2 -> updateSleepData("BAD")
-                        3 -> updateSleepData("OKAY")
-                        4 -> updateSleepData("GOOD")
-                        5 -> updateSleepData("GREAT")
-                    }
-                    myDialog.dismiss()
-                }
-                updateArray()
-                println("_-------------- array size after update " + userSleepDataArray.size.toString())
-                testText()
-                myDialog.show()
+            textView_toggle.text = "start"
+
+            toggleCard.setOnClickListener({
+                onClickStart(view)
+            })
 
 
-            }
         }
-
-    }
-
-    private fun updateSleepUI(sleepData:SleepData){
-
-    }
-
-    fun convertLongToTime(time: Long): String {
-        val date = Date(time)
-        val format = SimpleDateFormat("yyyy-MM-dd HH:mm")
-        return format.format(date)
-    }
+    }*/
 
 }

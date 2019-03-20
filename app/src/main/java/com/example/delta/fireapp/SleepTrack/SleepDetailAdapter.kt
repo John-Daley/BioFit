@@ -41,7 +41,7 @@ class SleepDetailAdapter(val sleepDataArray: ArrayList<SleepData>): RecyclerView
         val startDate = Date(sleepDataArray[position].start)
         val endDate = Date(sleepDataArray[position].end)
         val format = SimpleDateFormat("HH:mm")
-        val output: String = format.format(startDate) + " - " + format.format(endDate)
+        val output: String = "You slept from " + format.format(startDate) + " - " + format.format(endDate)
         holder?.itemView?.textView_timeRange?.text = output
 
     }
@@ -61,7 +61,7 @@ class SleepDetailAdapter(val sleepDataArray: ArrayList<SleepData>): RecyclerView
                 TimeUnit.MILLISECONDS.toHours(timeSlept),
                 TimeUnit.MILLISECONDS.toMinutes(timeSlept) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(timeSlept)),
                 TimeUnit.MILLISECONDS.toSeconds(timeSlept) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(timeSlept)))
-        holder?.itemView?.textView_timeSpan?.text = outPut
+        holder?.itemView?.textView_timeSpan?.text = "You slept for " + outPut
     }
 
 }

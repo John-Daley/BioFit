@@ -29,7 +29,10 @@ class SleepTrackActivity : AppCompatActivity() {
     // --DB Ops
     private lateinit var mAuth: FirebaseAuth
     private lateinit var dbRef: DatabaseReference
+    private lateinit var sleepDataDbRef: DatabaseReference
     private lateinit var currentUserUID: String
+    private var currentKey = "0"
+    var aux = 1
 
     var userSleepDataArray = arrayListOf<SleepData>()
 
@@ -45,6 +48,7 @@ class SleepTrackActivity : AppCompatActivity() {
 
         //general db initialization
         dbRef = FirebaseDatabase.getInstance().reference
+        sleepDataDbRef = FirebaseDatabase.getInstance().getReference("SleepData")
 
 
         test()
@@ -86,78 +90,54 @@ class SleepTrackActivity : AppCompatActivity() {
     }
 
 
-    private fun saveSleepData(sleepData: SleepData){
+    private fun saveSleepData(){
 
-        var sleepDbRef: DatabaseReference = FirebaseDatabase.getInstance().getReference("SleepData")
-        val key = sleepDbRef.push().key
-        dbRef.child("SleepData").child(key).setValue(sleepData)
+        currentKey = sleepDataDbRef.push().key
 
-        Toast.makeText(this, "Sleep Data saved", Toast.LENGTH_SHORT).show()
+        dbRef.child("SleepData").child(currentKey).child("start").setValue(ServerValue.TIMESTAMP)
+        dbRef.child("SleepData").child(currentKey).child("userId").setValue(currentUserUID)
+
+        Toast.makeText(this, "Sleep Sesh Started", Toast.LENGTH_SHORT).show()
 
     }
 
     private fun updateSleepData(newRating:String){
 
-        val now = System.currentTimeMillis()
 
-        val query = dbRef.child("SleepData")
+        dbRef.child("SleepData").child(currentKey).child("end").setValue(ServerValue.TIMESTAMP)
+        dbRef.child("SleepData").child(currentKey).child("rating").setValue(newRating)
 
-        query.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                for (sleepData in dataSnapshot.children) {
-
-
-
-                    var data = sleepData.getValue(SleepData::class.java)
-
-                    if (data!!.userId.equals(currentUserUID)) {
-
-                        println(data.toString())
-
-                        if (!data.end.equals(0)) {
-
-                            var sleepReference = FirebaseDatabase.getInstance().reference.child("SleepData").child(sleepData.key)
-
-                            data.end = now
-                            data.rating = newRating
-
-                            println(data.toString())
-
-                            sleepReference.setValue(data)
-
-                        }
-
-
-                    }
-                }
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                // Getting Post failed, log a message
-                //Log.w(TAG, "loadPost:onCancelled", databaseError.toException())
-                // ...
-            }
-        })
+        Toast.makeText(this, "Sleep Sesh Stopped", Toast.LENGTH_SHORT).show()
 
     }
 
     private fun updateArray(){
 
-        val query = dbRef.child("SleepData")
+        userSleepDataArray.clear()
 
+        //find all object with this user's ID
+        val query = dbRef.child("SleepData").orderByChild("userId").equalTo(currentUserUID)
+
+        //the query should return a list of SleepData Objects that have the current user's ID
+        //loop through results with for loop
         query.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                for (sleepData in dataSnapshot.children) {
+                for (sleepDataSnapshot in dataSnapshot.children) {
 
-                    var data = sleepData.getValue(SleepData::class.java)
+                    val data = sleepDataSnapshot.getValue(SleepData::class.java)
 
-                    if (data!!.userId.equals(currentUserUID)) {
+                    println("--------------------------->retrieved child has this ID "+data!!.userId)
+
+                    if (data.userId.equals(currentUserUID)) {
+
+                        println("-------------------------matches")
+                        println("---------------object: " + data.start)
 
                         userSleepDataArray.add(data)
-                        textView_test.text = userSleepDataArray.size.toString()
 
                     }
                 }
+                println("_-------------- array size from within updateArray() " + userSleepDataArray.size.toString())
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
@@ -174,18 +154,24 @@ class SleepTrackActivity : AppCompatActivity() {
             if(isChecked){
                 //started sleeping
 
-                val data = SleepData(System.currentTimeMillis(),0,"", currentUserUID)
+                saveSleepData()
+                aux++
 
-                saveSleepData(data)
-
-                userSleepDataArray.clear()
 
             }else{
                 //woke up
-                updateSleepData("Excellent")
+
+                when(aux) {
+                    1 -> rating = "TERRIBLE"
+                    2 -> rating = "BAD"
+                    3 -> rating = "OKAY"
+                    4 -> rating = "GOOD"
+                    5 -> rating = "GREAT"
+                }
+                updateSleepData(rating)
                 updateArray()
 
-
+                println("_-------------- array size after update " + userSleepDataArray.size.toString())
 
             }
         }

@@ -20,7 +20,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
-<!--Strings added by John for user profile and running activities -->
+    <!--Strings added by John for user profile and running activities -->
     <string name="user_name">John Daley</string>
     <string name="profile_Pic">Users profile pic</string>
     <string name="button_label_sleep">Sleep Tracker</string>
@@ -33,5 +33,6 @@
     <string name="profile_save_button">Save</string>
     <string name="invalid_empty_string">This field can\'t be empty</string>
     <string name="date_format_dd_mm_yyyy">Please enter a valid date: dd/mm/yyyy</string>
+    <string name="title_activity_account_settings">AccountSettingsActivity</string>
 
 </resources>

@@ -1,5 +1,6 @@
 package com.example.delta.fireapp.DataModel
 
+import java.io.Serializable
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -14,7 +15,7 @@ data class SleepData (
         val userId:String? = ""
 
 
-){
+): Serializable {
     override fun toString():String{
         return "Sleep Sesh: " + convertLongToTime(start)
     }

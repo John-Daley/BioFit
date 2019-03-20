@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/BioFit.iml" filepath="$PROJECT_DIR$/BioFit.iml" />
-      <module fileurl="file://C:\Users\Delta\Documents\Education\HKR\4. VT19\Development for Mobile Platforms\Project\BioFit\.idea\BioFit.iml" filepath="C:\Users\Delta\Documents\Education\HKR\4. VT19\Development for Mobile Platforms\Project\BioFit\.idea\BioFit.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

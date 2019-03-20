@@ -8,16 +8,19 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import com.example.delta.fireapp.DataModel.SleepData
+import com.example.delta.fireapp.DataModel.SleepDataCallBack
 import com.example.delta.fireapp.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.hsalf.smilerating.SmileRating
 import kotlinx.android.synthetic.main.activity_sleep_track.*
+import kotlinx.android.synthetic.main.popup_smiley_rating.*
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
+import javax.security.auth.callback.Callback
 
-class SleepTrackActivity : AppCompatActivity() {
+class SleepTrackActivity : AppCompatActivity(), SleepDataCallBack {
 
     //These variables can be stored in a SleepData object
     //substitute with: lateinit var sleepData: SleepData
@@ -29,7 +32,10 @@ class SleepTrackActivity : AppCompatActivity() {
     // --DB Ops
     private lateinit var mAuth: FirebaseAuth
     private lateinit var dbRef: DatabaseReference
+    private lateinit var sleepDataDbRef: DatabaseReference
     private lateinit var currentUserUID: String
+    private var currentKey = "0"
+    var aux = 1
 
     var userSleepDataArray = arrayListOf<SleepData>()
 
@@ -45,15 +51,30 @@ class SleepTrackActivity : AppCompatActivity() {
 
         //general db initialization
         dbRef = FirebaseDatabase.getInstance().reference
+        sleepDataDbRef = FirebaseDatabase.getInstance().getReference("SleepData")
 
-
+        updateArray()
         test()
     }
 
     fun startButton(view: View){
-    startTime = Calendar.getInstance().time
+        val intent = Intent(this, SleepDetailActivity::class.java)
+        var bundle = Bundle()
+        bundle.putSerializable("sleepData", userSleepDataArray)
+        intent.putExtras(bundle)
+        startActivity(intent)
 
 }
+
+    fun testText(){
+        var start: Long = userSleepDataArray[0].start
+        var end: Long = userSleepDataArray[0].end
+        var timeSlept = end-start
+        var outPut = String.format("%02d:%02d:%02d",
+                TimeUnit.MILLISECONDS.toHours(timeSlept),
+                TimeUnit.MILLISECONDS.toMinutes(timeSlept) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(timeSlept)),
+                TimeUnit.MILLISECONDS.toSeconds(timeSlept) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(timeSlept)))
+    }
 
     fun stopButton(view: View) {
         stopTime = Calendar.getInstance().time
@@ -65,6 +86,8 @@ class SleepTrackActivity : AppCompatActivity() {
         myDialog.setContentView(R.layout.popup_smiley_rating)
         var tvTimeSlept = myDialog.findViewById<TextView>(R.id.textView4)
         var smileRating = myDialog.findViewById<SmileRating>(R.id.smile_rating)
+
+
 
         smileRating.setOnRatingSelectedListener { level, reselected ->
             when (level) {
@@ -86,78 +109,58 @@ class SleepTrackActivity : AppCompatActivity() {
     }
 
 
-    private fun saveSleepData(sleepData: SleepData){
+    private fun saveSleepData(){
 
-        var sleepDbRef: DatabaseReference = FirebaseDatabase.getInstance().getReference("SleepData")
-        val key = sleepDbRef.push().key
-        dbRef.child("SleepData").child(key).setValue(sleepData)
+        currentKey = sleepDataDbRef.push().key
 
-        Toast.makeText(this, "Sleep Data saved", Toast.LENGTH_SHORT).show()
+        dbRef.child("SleepData").child(currentKey).child("start").setValue(ServerValue.TIMESTAMP)
+        dbRef.child("SleepData").child(currentKey).child("userId").setValue(currentUserUID)
+
+        //Toast.makeText(this, "Sleep Sesh Started", Toast.LENGTH_SHORT).show()
 
     }
 
     private fun updateSleepData(newRating:String){
 
-        val now = System.currentTimeMillis()
 
-        val query = dbRef.child("SleepData")
+        dbRef.child("SleepData").child(currentKey).child("end").setValue(ServerValue.TIMESTAMP)
+        dbRef.child("SleepData").child(currentKey).child("rating").setValue(newRating)
 
-        query.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                for (sleepData in dataSnapshot.children) {
-
-
-
-                    var data = sleepData.getValue(SleepData::class.java)
-
-                    if (data!!.userId.equals(currentUserUID)) {
-
-                        println(data.toString())
-
-                        if (!data.end.equals(0)) {
-
-                            var sleepReference = FirebaseDatabase.getInstance().reference.child("SleepData").child(sleepData.key)
-
-                            data.end = now
-                            data.rating = newRating
-
-                            println(data.toString())
-
-                            sleepReference.setValue(data)
-
-                        }
-
-
-                    }
-                }
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                // Getting Post failed, log a message
-                //Log.w(TAG, "loadPost:onCancelled", databaseError.toException())
-                // ...
-            }
-        })
+        //Toast.makeText(this, "Sleep Sesh Stopped", Toast.LENGTH_SHORT).show()
 
     }
 
+
     private fun updateArray(){
 
-        val query = dbRef.child("SleepData")
+        //find all object with this user's ID
 
+        val query = dbRef.child("SleepData").orderByChild("userId").equalTo(currentUserUID)
+
+        //the query should return a list of SleepData Objects that have the current user's ID
+        //loop through results with for loop
         query.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                for (sleepData in dataSnapshot.children) {
+                userSleepDataArray.clear()
+                for (sleepDataSnapshot in dataSnapshot.children) {
+                    val data = sleepDataSnapshot.getValue(SleepData::class.java)
 
-                    var data = sleepData.getValue(SleepData::class.java)
+                    println("--------------------------->retrieved child has this ID "+data!!.userId)
 
-                    if (data!!.userId.equals(currentUserUID)) {
+                    if (data.userId.equals(currentUserUID)) {
+
+                        println("-------------------------matches")
+                        println("---------------object: " + data.start)
 
                         userSleepDataArray.add(data)
-                        textView_test.text = userSleepDataArray.size.toString()
+                        println("-----------------This is the size"+ userSleepDataArray.size)
 
                     }
                 }
+
+                //onCallBack(userSleepDataArray)
+
+                println("_-------------- array size from within updateArray() " + userSleepDataArray.size.toString())
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
@@ -174,27 +177,41 @@ class SleepTrackActivity : AppCompatActivity() {
             if(isChecked){
                 //started sleeping
 
-                val data = SleepData(System.currentTimeMillis(),0,"", currentUserUID)
+                saveSleepData()
+                aux++
 
-                saveSleepData(data)
+                //Toast.makeText(this, "WORKING BOI", Toast.LENGTH_SHORT).show()
 
-                userSleepDataArray.clear()
+
 
             }else{
                 //woke up
-                updateSleepData("Excellent")
+
+                myDialog.setContentView(R.layout.popup_smiley_rating)
+                var smileRating = myDialog.findViewById<SmileRating>(R.id.smile_rating)
+                smileRating.setOnRatingSelectedListener { level, reselected ->
+                    when (level) {
+                        1 -> updateSleepData("TERRIBLE")
+                        2 -> updateSleepData("BAD")
+                        3 -> updateSleepData("OKAY")
+                        4 -> updateSleepData("GOOD")
+                        5 -> updateSleepData("GREAT")
+                    }
+                    myDialog.dismiss()
+                }
                 updateArray()
-
-
+                println("_-------------- array size after update " + userSleepDataArray.size.toString())
+                testText()
+                myDialog.show()
 
             }
         }
+
     }
 
     private fun updateSleepUI(sleepData:SleepData){
 
     }
-
 
     fun convertLongToTime(time: Long): String {
         val date = Date(time)

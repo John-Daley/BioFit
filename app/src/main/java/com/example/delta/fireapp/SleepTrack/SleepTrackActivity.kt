@@ -111,12 +111,13 @@ class SleepTrackActivity : AppCompatActivity(), SleepDataCallBack {
 
     private fun saveSleepData(){
 
+
         currentKey = sleepDataDbRef.push().key
 
         dbRef.child("SleepData").child(currentKey).child("start").setValue(ServerValue.TIMESTAMP)
         dbRef.child("SleepData").child(currentKey).child("userId").setValue(currentUserUID)
 
-        //Toast.makeText(this, "Sleep Sesh Started", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Sleep Sesh Started", Toast.LENGTH_SHORT).show()
 
     }
 
@@ -126,12 +127,14 @@ class SleepTrackActivity : AppCompatActivity(), SleepDataCallBack {
         dbRef.child("SleepData").child(currentKey).child("end").setValue(ServerValue.TIMESTAMP)
         dbRef.child("SleepData").child(currentKey).child("rating").setValue(newRating)
 
-        //Toast.makeText(this, "Sleep Sesh Stopped", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Sleep Sesh Stopped", Toast.LENGTH_SHORT).show()
+
 
     }
 
 
     private fun updateArray(){
+
 
         //find all object with this user's ID
 
@@ -153,12 +156,9 @@ class SleepTrackActivity : AppCompatActivity(), SleepDataCallBack {
                         println("---------------object: " + data.start)
 
                         userSleepDataArray.add(data)
-                        println("-----------------This is the size"+ userSleepDataArray.size)
-
+                      
                     }
                 }
-
-                //onCallBack(userSleepDataArray)
 
                 println("_-------------- array size from within updateArray() " + userSleepDataArray.size.toString())
             }
@@ -179,10 +179,7 @@ class SleepTrackActivity : AppCompatActivity(), SleepDataCallBack {
 
                 saveSleepData()
                 aux++
-
                 //Toast.makeText(this, "WORKING BOI", Toast.LENGTH_SHORT).show()
-
-
 
             }else{
                 //woke up
@@ -203,6 +200,7 @@ class SleepTrackActivity : AppCompatActivity(), SleepDataCallBack {
                 println("_-------------- array size after update " + userSleepDataArray.size.toString())
                 testText()
                 myDialog.show()
+
 
             }
         }

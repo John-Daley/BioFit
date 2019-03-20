@@ -52,6 +52,11 @@ class LoginActivity : AppCompatActivity() {
 
         }
 
+        tv_forgot_password.setOnClickListener {
+
+            startActivity(Intent(this, RetrievePasswordActivity::class.java))
+        }
+
     }
 
     override fun onStart() {

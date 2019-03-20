@@ -18,7 +18,7 @@ fun getTheRunDuration(view: View){
     var hours: Int =  0
     var mins: Int= 0
     if(hoursText.text.isEmpty()){
-    hours = 0;
+    hours = 0
 }else{
         hours =  hoursText.text.toString().toInt().times(60)
     }

@@ -27,11 +27,9 @@ class MapRunningActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var currentFusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var lastLocation: Location
-    private lateinit var whereIAmAtNow : Location
+    private lateinit var whereIAmAtNow: Location
     private var secondsRemaining: Long = 0
     private lateinit var locationCallback: LocationCallback
-
-    //   private lateinit var homeLocation: Location
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map_running)
@@ -39,14 +37,12 @@ class MapRunningActivity : AppCompatActivity(), OnMapReadyCallback {
         val runTimer: Int = intent.getIntExtra("time", 0)
         secondsRemaining = runTimer.toLong() * 60
         startTimer()
-
         val mapFragment = supportFragmentManager
                 .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-     currentFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-
     }
+
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
     }
@@ -54,9 +50,7 @@ class MapRunningActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
         mMap.uiSettings.isZoomControlsEnabled = true
-
         setUpPermissionsOnMap()
-
     }
 
     private fun setUpPermissionsOnMap() {
@@ -74,18 +68,18 @@ class MapRunningActivity : AppCompatActivity(), OnMapReadyCallback {
                 lastLocation = location
                 val currentLatLang = LatLng(location.latitude, location.longitude)
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLang, 12f))
-
             }
         }
     }
 
-fun showTimeRemainingText(){
-   val runTimer: Int = intent.getIntExtra("time", 0)
-    var showRunningTime: TextView = findViewById(R.id.runTimerTextView)
-    showRunningTime.text = runTimer.toString()
+    fun showTimeRemainingText() {
+        val runTimer: Int = intent.getIntExtra("time", 0)
+        var showRunningTime: TextView = findViewById(R.id.runTimerTextView)
+        showRunningTime.text = runTimer.toString()
 
-}
-    private fun updateCountdownUI(){
+    }
+
+    private fun updateCountdownUI() {
 
         val minutesUntilFinished = secondsRemaining / 60
         val secondsInMinuteUntilFinished = secondsRemaining - minutesUntilFinished * 60
@@ -93,7 +87,8 @@ fun showTimeRemainingText(){
         runTimerTextView.text = "$minutesUntilFinished:${if (secondsStr.length == 2) secondsStr else "0" + secondsStr}"
 
     }
-    private fun startTimer(){
+
+    private fun startTimer() {
 
 
         timer = object : CountDownTimer(secondsRemaining * 1000, 1000) {
@@ -105,45 +100,45 @@ fun showTimeRemainingText(){
             }
         }.start()
     }
-fun onTimerFinished(){
-    runTimerTextView.text = " Good Job "
-}
-fun calculateReturnTime(view: View){
-val textForToast = "time to head home!"
-val duration = Toast.LENGTH_SHORT
 
-    locationCallback = object : LocationCallback() {
-        override fun onLocationResult(locationResult: LocationResult?) {
-            locationResult ?: return
-            for (location in locationResult.locations){
+    fun onTimerFinished() {
+        runTimerTextView.text = " Good Job "
+    }
 
+    fun calculateReturnTime(view: View) {
+        val textForToast = "time to head home!"
+        val duration = Toast.LENGTH_SHORT
+
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult?) {
+                locationResult ?: return
+                for (location in locationResult.locations) {
+
+                }
             }
-        }}
+        }
 
-    val homeLocation: Location = Location("yea")
-    homeLocation.latitude = 56.045763 //56.052398
-    homeLocation.longitude = 14.151597 //14.146396
- //val whereIAmAtNow : Location = Location("hmm")
-   // whereIAmAtNow.latitude = 56.052398
-    //whereIAmAtNow.longitude = 14.146396
-    if (ActivityCompat.checkSelfPermission(this,
-                    android.Manifest.permission.ACCESS_FINE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED) {
-        ActivityCompat.requestPermissions(this,
-                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
-                LOCATION_PERMISSION_REQUEST_CODE)
-        return
-    }
+        val homeLocation: Location = Location("yea")
+        homeLocation.latitude = 56.045763 //56.052398
+        homeLocation.longitude = 14.151597 //14.146396
+        if (ActivityCompat.checkSelfPermission(this,
+                        android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                    LOCATION_PERMISSION_REQUEST_CODE)
+            return
+        }
 
-    val locationRequest = LocationRequest.create()?.apply {
-        interval = 10000
-        fastestInterval = 5000
-        priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-    }
-    locationRequest
-    fusedLocationClient.lastLocation.addOnSuccessListener(this) { location ->
-        if (location != null) {
-            whereIAmAtNow = location
+        val locationRequest = LocationRequest.create()?.apply {
+            interval = 10000
+            fastestInterval = 5000
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        }
+        locationRequest
+        fusedLocationClient.lastLocation.addOnSuccessListener(this) { location ->
+            if (location != null) {
+                whereIAmAtNow = location
 
                 val distanceHome = whereIAmAtNow.distanceTo(homeLocation)
                 val distanceHomeText: TextView = findViewById(R.id.distanceHomeTextView)
@@ -155,22 +150,14 @@ val duration = Toast.LENGTH_SHORT
                 var timeUntilHome = distanceHome / currentSpeed
                 timeUntilHomeText.text = timeUntilHome.toString()
                 val timeToGoHomeText: TextView = findViewById(R.id.testGoHome)
-                if(timeUntilHome.toLong() <= secondsRemaining){
-                    val toast = Toast.makeText(applicationContext,textForToast,duration)
+                if (timeUntilHome.toLong() <= secondsRemaining) {
+                    val toast = Toast.makeText(applicationContext, textForToast, duration)
                     toast.show()
                     timeToGoHomeText.text = " Time to go home ! "
                 }
+            }
         }
-    }
 
-}
-    fun createLocationRequest() {
-
-        val locationRequest = LocationRequest.create()?.apply {
-            interval = 10000
-            fastestInterval = 5000
-            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        }
     }
 
 }

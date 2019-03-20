@@ -8,19 +8,16 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import com.example.delta.fireapp.DataModel.SleepData
-import com.example.delta.fireapp.DataModel.SleepDataCallBack
 import com.example.delta.fireapp.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.hsalf.smilerating.SmileRating
 import kotlinx.android.synthetic.main.activity_sleep_track.*
-import kotlinx.android.synthetic.main.popup_smiley_rating.*
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
-import javax.security.auth.callback.Callback
 
-class SleepTrackActivity : AppCompatActivity(), SleepDataCallBack {
+class SleepTrackActivity : AppCompatActivity() {
 
     //These variables can be stored in a SleepData object
     //substitute with: lateinit var sleepData: SleepData

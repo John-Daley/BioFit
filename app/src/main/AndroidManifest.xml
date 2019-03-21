@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.BODY_SENSORS" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -15,12 +16,23 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity android:name=".SleepTrack.SleepTrackActivity" />
         <activity android:name=".SleepTrack.SleepDetailActivity" />
         <activity android:name=".SleepTrack.SleepSettingsActivity" />
         <activity android:name=".RetrievePasswordActivity" />
-        <activity android:name=".RunSettingsActivity" />
+  
         <activity android:name=".UserProfileActivity" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAInO97L5OwmXUtCkEYBlKUYRGMq-1tn_g" />
+
+        <activity android:name=".RunTrack.MapRunningActivity"></activity>
+ 
+        <activity android:name=".RunTrack.RunSettingsActivity" />
+      
+
         <activity android:name=".HeartRateActivity" />
         <activity
             android:name=".LoginActivity"

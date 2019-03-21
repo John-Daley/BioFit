@@ -4,6 +4,8 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
 import com.example.delta.fireapp.DataModel.SleepData
 import com.example.delta.fireapp.R
@@ -13,7 +15,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class SleepDetailAdapter(val sleepDataArray: ArrayList<SleepData>): RecyclerView.Adapter<CustomViewHolder>() {
+class SleepDetailAdapter(val sleepDataArray: ArrayList<SleepData>, val parentActivity: SleepDetailActivity): RecyclerView.Adapter<CustomViewHolder>() {
 
     override fun getItemCount(): Int {
         return sleepDataArray.size
@@ -22,6 +24,7 @@ class SleepDetailAdapter(val sleepDataArray: ArrayList<SleepData>): RecyclerView
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): CustomViewHolder {
         val layoutInflater = LayoutInflater.from(parent?.context)
         val cellForRow = layoutInflater.inflate(R.layout.detail_row, parent, false)
+
         return CustomViewHolder(cellForRow)
     }
 
@@ -30,7 +33,8 @@ class SleepDetailAdapter(val sleepDataArray: ArrayList<SleepData>): RecyclerView
         timeRating(holder, position)
         date(holder, position)
         timeRange(holder, position)
-    }
+            }
+
 
     fun timeRating(holder: CustomViewHolder?, position: Int){
         holder?.itemView?.textView_rating?.text = sleepDataArray[position].rating
@@ -53,10 +57,8 @@ class SleepDetailAdapter(val sleepDataArray: ArrayList<SleepData>): RecyclerView
     }
 
     fun date(holder: CustomViewHolder?, position: Int){
-        val date = Date(sleepDataArray[position].start)
-        //var end: Long = sleepDataArray[position].end
-        val format = SimpleDateFormat("yyyy.MM.dd")
-        holder?.itemView?.textView_Date?.text = format.format(date)
+
+        holder?.itemView?.textView_Date?.text = calculateDate(position)
     }
 
     fun timeSpanText(holder: CustomViewHolder?, position: Int){
@@ -70,6 +72,12 @@ class SleepDetailAdapter(val sleepDataArray: ArrayList<SleepData>): RecyclerView
         holder?.itemView?.textView_timeSpan?.text = "You slept for " + outPut
     }
 
+    fun calculateDate(position: Int): String{
+        val date = Date(sleepDataArray[position].start)
+        //var end: Long = sleepDataArray[position].end
+        val format = SimpleDateFormat("yyyy.MM.dd")
+        return format.format(date)
+    }
 }
 
 class CustomViewHolder(view: View): RecyclerView.ViewHolder(view){

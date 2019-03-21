@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import com.example.delta.fireapp.DataModel.SleepData
@@ -31,7 +32,7 @@ class SleepDetailActivity : AppCompatActivity() {
         sleepDataArray = bundleObject.getSerializable("sleepData") as ArrayList<SleepData>
 
         recyclerView_detail.layoutManager = LinearLayoutManager(this)
-        recyclerView_detail.adapter = SleepDetailAdapter(sleepDataArray)
+        recyclerView_detail.adapter = SleepDetailAdapter(sleepDataArray, this)
 
     }
 

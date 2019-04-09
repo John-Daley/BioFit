@@ -1,5 +1,6 @@
 package com.example.delta.fireapp
 
+import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -19,8 +20,8 @@ import kotlinx.android.synthetic.main.activity_heart_rate.*
 import java.text.SimpleDateFormat
 
 class HeartRateActivity : AppCompatActivity(), SensorEventListener {
-    val sensorManager: SensorManager? = null
-    val heartRateSensor: Sensor? = null
+    var sensorManager: SensorManager? = null
+    var heartRateSensor: Sensor? = null
 
     // --DB Ops
     private lateinit var mAuth: FirebaseAuth
@@ -43,12 +44,16 @@ class HeartRateActivity : AppCompatActivity(), SensorEventListener {
     }
 
     fun onClickBPMstartButton(view: View){
+        sensorManager = this.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        heartRateSensor = sensorManager!!.getDefaultSensor(Sensor.TYPE_HEART_RATE)
 
         //Manager enables sensor data as fast as possible
-        if(sensorManager != null && heartRateSensor != null) {
-            sensorManager.registerListener(this, heartRateSensor, SensorManager.SENSOR_DELAY_FASTEST)
+        if(heartRateSensor == null)
+            println("Sensor not working")
+        else
+            sensorManager?.registerListener(this, heartRateSensor, SensorManager.SENSOR_DELAY_FASTEST)
+            println("Sensor......")
 
-        }
 
     }
 
@@ -71,6 +76,7 @@ class HeartRateActivity : AppCompatActivity(), SensorEventListener {
         val beatsPerMinuteDisplay = findViewById<TextView>(R.id.beatsPerMinuteDisplay)
 
         beatsPerMinuteDisplay.setText(Integer.toString(heartRate))
+        println(" BPM: " + heartRate)
     }
 
     //Disables sensor when paused

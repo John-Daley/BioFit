@@ -1,7 +1,9 @@
 package com.example.delta.fireapp.SleepTrack
 
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -34,6 +36,7 @@ class SleepTrackActivity : AppCompatActivity() {
     private lateinit var currentUserUID: String
     private var currentKey = "0"
     var aux = 1
+    //var mPreferences = getSharedPreferences("CurrentUser", Context.MODE_PRIVATE)
 
     var userSleepDataArray = arrayListOf<SleepData>()
 
@@ -52,15 +55,22 @@ class SleepTrackActivity : AppCompatActivity() {
         sleepDataDbRef = FirebaseDatabase.getInstance().getReference("SleepData")
 
         updateArray()
+
+        //isStarted = mPreferences.getBoolean("isStarted", isStarted)
+        updateUI()
         //test()
     }
 
+
     fun recordingsButton(view: View){
-        val intent = Intent(this, SleepDetailActivity::class.java)
-        var bundle = Bundle()
-        bundle.putSerializable("sleepData", userSleepDataArray)
-        intent.putExtras(bundle)
-        startActivity(intent)
+        if(isStarted) {
+        }else {
+            val intent = Intent(this, SleepDetailActivity::class.java)
+            var bundle = Bundle()
+            bundle.putSerializable("sleepData", userSleepDataArray)
+            intent.putExtras(bundle)
+            startActivity(intent)
+        }
 
 }
 
@@ -148,29 +158,58 @@ class SleepTrackActivity : AppCompatActivity() {
 
     fun onClickStart(view: View){
         isStarted = true
+        //onBackPressed()
         saveSleepData()
         updateUI()
 
 
+      /*  var editor: SharedPreferences.Editor = mPreferences.edit()
+        editor.putBoolean("isStarted", true)
+        editor.commit()*/
+
+    }
+
+    override fun onBackPressed() {
+        if(isStarted) {
+            //super.onBackPressed()
+        } else{
+            super.onBackPressed()
+        }
     }
 
     fun onClickStop(view: View){
         isStarted = false
+        //onBackPressed()
         myDialog.setContentView(R.layout.popup_smiley_rating)
         var smileRating = myDialog.findViewById<SmileRating>(R.id.smile_rating)
         smileRating.setOnRatingSelectedListener { level, reselected ->
             when (level) {
-                1 -> updateSleepData("TERRIBLE")
-                2 -> updateSleepData("BAD")
-                3 -> updateSleepData("OKAY")
-                4 -> updateSleepData("GOOD")
-                5 -> updateSleepData("GREAT")
+                1 -> {
+                    updateSleepData("TERRIBLE")
+                    updateArray()
+                }
+                2 -> {
+                    updateSleepData("BAD")
+                    updateArray()
+                }
+                3 -> {
+                    updateSleepData("OKAY")
+                    updateArray()
+                }
+                4 -> {
+                    updateSleepData("GOOD")
+                    updateArray()
+                }
+                5 -> {
+                    updateSleepData("GREAT")
+                    updateArray()
+                }
             }
             myDialog.dismiss()
         }
-        updateArray()
         updateUI()
         myDialog.show()
+
     }
 
    /*fun test(view: View){

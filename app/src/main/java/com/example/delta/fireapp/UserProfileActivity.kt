@@ -1,11 +1,16 @@
 package com.example.delta.fireapp
 
+import android.content.ContentValues
 import android.os.Bundle
+import android.provider.BaseColumns
 import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import com.example.delta.fireapp.DataModel.UserData
+import com.example.delta.fireapp.DatabaseUtility.UserContract
+import com.example.delta.fireapp.DatabaseUtility.UserDatabaseHelper
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -19,6 +24,9 @@ class UserProfileActivity : AppCompatActivity() {
     private lateinit var userReference: DatabaseReference
 
     private var isEditable = false
+
+    //SQLite database helper instance
+    private val userDatabaseHelper = UserDatabaseHelper(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -130,6 +138,12 @@ class UserProfileActivity : AppCompatActivity() {
             isEditable = false
 
             writeUserData()
+
+            addUserInformationToSQLiteDB()
+
+            val string =  readFromSQLiteDB()
+
+            Toast.makeText(this, string, Toast.LENGTH_LONG).show()
 
 
         }
@@ -261,5 +275,72 @@ class UserProfileActivity : AppCompatActivity() {
         profile_DOB.isEnabled = true
     }
 
+
+    private fun addUserInformationToSQLiteDB(){
+
+
+
+        val writableUserDB = userDatabaseHelper.writableDatabase
+
+        val values = ContentValues().apply{
+
+            put(UserContract.UserEntry.COLUMN_NAME_EMAIL, profile_email.text.toString())
+            put(UserContract.UserEntry.COLUMN_NAME_FIRST, profile_first_name.text.toString())
+            put(UserContract.UserEntry.COLUMN_NAME_LAST, profile_last_name.text.toString())
+            put(UserContract.UserEntry.COLUMN_NAME_DOB, profile_DOB.text.toString())
+
+        }
+
+        val newRowId = writableUserDB.insert(UserContract.UserEntry.TABLE_NAME,null, values)
+
+
+
+    }
+
+    private fun readFromSQLiteDB(): String {
+
+        val readableUserDB = userDatabaseHelper.readableDatabase
+
+        val projection = arrayOf(BaseColumns._ID,
+                UserContract.UserEntry.COLUMN_NAME_EMAIL,
+                UserContract.UserEntry.COLUMN_NAME_FIRST,
+                UserContract.UserEntry.COLUMN_NAME_LAST,
+                UserContract.UserEntry.COLUMN_NAME_DOB)
+
+
+        // Filter results WHERE "email" = user's email
+        val selection = "${UserContract.UserEntry.COLUMN_NAME_EMAIL} = ?"
+        val selectionArgs = arrayOf(profile_email.text.toString())
+
+        val cursor = readableUserDB.query(
+                UserContract.UserEntry.TABLE_NAME,  // The table to query
+                projection,                         // The array of columns to return (pass null to get all)
+                selection,                          // The columns for the WHERE clause
+                selectionArgs,                      // The values for the WHERE clause
+                null,                      // don't group the rows
+                null,                       // don't filter by row groups
+                null                       // don't sort
+        )
+
+
+        var userEntryString = ""
+
+        with(cursor) {
+            while (moveToNext()) {
+                val userId = cursor.getString(cursor.getColumnIndex(BaseColumns._ID))
+                val userEmail = cursor.getString(cursor.getColumnIndex(UserContract.UserEntry.COLUMN_NAME_EMAIL))
+                val first = cursor.getString(cursor.getColumnIndex(UserContract.UserEntry.COLUMN_NAME_FIRST))
+                val last = cursor.getString(cursor.getColumnIndex(UserContract.UserEntry.COLUMN_NAME_LAST))
+                val dob = cursor.getString(cursor.getColumnIndex(UserContract.UserEntry.COLUMN_NAME_DOB))
+
+                userEntryString = "$userEntryString\n$userId $userEmail $first $last $dob"
+
+            }
+        }
+
+
+    return userEntryString
+
+    }
 
 }

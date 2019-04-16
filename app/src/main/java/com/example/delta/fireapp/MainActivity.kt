@@ -12,6 +12,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import com.example.delta.fireapp.DataModel.UserData
+import com.example.delta.fireapp.RunTrack.RunSettingsActivity
 import com.example.delta.fireapp.SleepTrack.SleepTrackActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -162,12 +163,17 @@ open class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
     }
 
     fun goToRunSettingsView(view: View){
-        val intent = Intent(this,RunSettingsActivity::class.java)
+        val intent = Intent(this, RunSettingsActivity::class.java)
         startActivity(intent)
     }
 
     fun goToSleepTrack(view: View){
         val intent = Intent(this, SleepTrackActivity::class.java)
+        startActivity(intent)
+    }
+
+    fun goToPedometerView(view: View){
+        val intent = Intent(this, Pedometer::class.java)
         startActivity(intent)
     }
 
